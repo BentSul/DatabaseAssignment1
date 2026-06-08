@@ -401,3 +401,92 @@ select movie_title, movie_year, movie_cost from MOVIE where movie_title like "%h
 +------------------+------------+------------+
 2 rows in set (0.001 sec)
 
+Question 11
+
+select movie_title, movie_year, movie_genre from MOVIE where movie_genre = "ACTION";
++--------------------------+------------+-------------+
+| movie_title              | movie_year | movie_genre |
++--------------------------+------------+-------------+
+| Smokey Mountain Wildlife | 2011       | ACTION      |
+| Time to Burn             | 2010       | ACTION      |
++--------------------------+------------+-------------+
+2 rows in set (0.001 sec)
+
+
+Question 12
+
+select movie_num, movie_title, movie_cost from MOVIE where movie_cost > 40;
++-----------+--------------------------+------------+
+| movie_num | movie_title              | movie_cost |
++-----------+--------------------------+------------+
+|      1235 | Smokey Mountain Wildlife |         60 |
+|      1236 | Richard Goodhope         |         60 |
+|      1238 | Constant Companion       |         90 |
+|      1245 | Time to Burn             |         45 |
+|      1246 | What He Doesnt Know      |         58 |
++-----------+--------------------------+------------+
+5 rows in set (0.001 sec)
+
+Question 13
+
+select movie_num, movie_title, movie_cost, movie_genre from MOVIE where (movie_genre = "ACTION" OR movie_genre = "COMEDY") AND movie_cost < 50 group
+by movie_genre asc;
++-----------+---------------+------------+-------------+
+| movie_num | movie_title   | movie_cost | movie_genre |
++-----------+---------------+------------+-------------+
+|      1245 | Time to Burn  |         45 | ACTION      |
+|      1237 | Beatnik Fever |         30 | COMEDY      |
++-----------+---------------+------------+-------------+
+2 rows in set (0.002 sec)
+
+Question 14
+
+select mem_num, mem_fname, mem_lname, mem_street, mem_state, mem_balance from MEMBERSHIP where mem_state = "TN" AND mem_balance <5 AND mem_street like "%Avenue";
++---------+-----------+-----------+-----------------------+-----------+-------------+
+| mem_num | mem_fname | mem_lname | mem_street            | mem_state | mem_balance |
++---------+-----------+-----------+-----------------------+-----------+-------------+
+|     104 | Jamal     | Melendez  | 788 East 145th Avenue | TN        |           0 |
+|     112 | Luis      | Trujillo  | 7267 Melvin Avenue    | TN        |           3 |
++---------+-----------+-----------+-----------------------+-----------+-------------+
+2 rows in set (0.001 sec)
+
+Question 15
+
+select movie_genre, count(*) as "Number of movies" from MOVIE group by movie_genre;
++-------------+------------------+
+| movie_genre | Number of movies |
++-------------+------------------+
+| ACTION      |                2 |
+| COMEDY      |                2 |
+| DRAMA       |                3 |
+| FAMILY      |                1 |
++-------------+------------------+
+4 rows in set (0.001 sec)
+
+Question 16
+
+select avg(movie_cost) as "Average Movie Cost" from MOVIE;
++--------------------+
+| Average Movie Cost |
++--------------------+
+|            51.0000 |
++--------------------+
+1 row in set (0.001 sec)
+
+Question 17
+
+select movie_genre, avg(movie_cost) from MOVIE group by movie_genre;
++-------------+-----------------+
+| movie_genre | avg(movie_cost) |
++-------------+-----------------+
+| ACTION      |         52.5000 |
+| COMEDY      |         44.0000 |
+| DRAMA       |         58.3333 |
+| FAMILY      |         40.0000 |
++-------------+-----------------+
+4 rows in set (0.001 sec)
+
+
+Question 18
+
+
