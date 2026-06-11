@@ -34,19 +34,21 @@ describe MEMBERSHIP;
 +-------------+--------------+------+-----+---------+-------+
 
 
-create table RENTAL( rent_num INT NOT NULL PRIMARY KEY, rent_date VARCHAR(100) NOT NULL, mem_num INT NOT NULL ,FOREIGN KEY (mem_num) REFERENCES MEMBE
+create table RENTAL( rent_num INT NOT NULL PRIMARY KEY, rent_date DATE NOT NULL, mem_num INT NOT NULL ,FOREIGN KEY (mem_num) REFERENCES MEMBE
 RSHIP(mem_num) );
 Query OK, 0 rows affected (0.014 sec)
 
-MariaDB [MovieCo]> describe RENTAL;
-+-----------+--------------+------+-----+---------+-------+
-| Field     | Type         | Null | Key | Default | Extra |
-+-----------+--------------+------+-----+---------+-------+
-| rent_num  | int(11)      | NO   | PRI | NULL    |       |
-| rent_date | varchar(100) | NO   |     | NULL    |       |
-| mem_num   | int(11)      | NO   | MUL | NULL    |       |
-+-----------+--------------+------+-----+---------+-------+
-3 rows in set (0.002 sec)
+describe RENTAL
+    -> ;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| rent_num  | int(11) | NO   | PRI | NULL    |       |
+| rent_date | date    | NO   |     | NULL    |       |
+| mem_num   | int(11) | NO   | MUL | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+3 rows in set (0.003 sec)
+
 
 
 create table PRICE (
@@ -93,7 +95,7 @@ MariaDB [MovieCo]> describe MOVIE;
 
 create table VIDEO (
     -> vid_num INT NOT NULL PRIMARY KEY, 
-    -> vid_indate VARCHAR(100) NOT NULL,
+    -> vid_indate DATE NOT NULL,
     -> movie_num INT NOT NULL,
     -> FOREIGN KEY (movie_num) REFERENCES MOVIE(movie_num) );
 Query OK, 0 rows affected (0.014 sec)
@@ -103,13 +105,13 @@ describe VIDEO;
 | Field      | Type         | Null | Key | Default | Extra |
 +------------+--------------+------+-----+---------+-------+
 | vid_num    | int(11)      | NO   | PRI | NULL    |       |
-| vid_indate | varchar(100) | NO   |     | NULL    |       |
+| vid_indate | date         | NO   |     | NULL    |       |
 | movie_num  | int(11)      | NO   | MUL | NULL    |       |
 +------------+--------------+------+-----+---------+-------+
 3 rows in set (0.003 sec)
 
 
-create table DETAILRENTAL ( rent_num INT NOT NULL, FOREIGN KEY (rent_num) REFERENCES RENTAL(rent_num), vid_num INT NOT NULL, FOREIGN KEY (vid_num) REFERENCES VIDEO(vid_num), detail_fee INT NOT NULL, detail_duedate VARCHAR(20) NOT NULL, detail_returndate VARCHAR(20) NOT NULL,  detail_dailylatefee VARCHAR(20), PRIMARY KEY (rent_num, vid_num) );
+create table DETAILRENTAL ( rent_num INT NOT NULL, FOREIGN KEY (rent_num) REFERENCES RENTAL(rent_num), vid_num INT NOT NULL, FOREIGN KEY (vid_num) REFERENCES VIDEO(vid_num), detail_fee INT NOT NULL, detail_duedate DATE NOT NULL, detail_returndate DATE NOT NULL,  detail_dailylatefee VARCHAR(20), PRIMARY KEY (rent_num, vid_num) );
 Query OK, 0 rows affected (0.014 sec)
 
 describe DETAILRENTAL;
@@ -119,8 +121,8 @@ describe DETAILRENTAL;
 | rent_num            | int(11)     | NO   | PRI | NULL    |       |
 | vid_num             | int(11)     | NO   | PRI | NULL    |       |
 | detail_fee          | int(11)     | NO   |     | NULL    |       |
-| detail_duedate      | varchar(20) | NO   |     | NULL    |       |
-| detail_returndate   | varchar(20) | NO   |     | NULL    |       |
+| detail_duedate      | date        | NO   |     | NULL    |       |
+| detail_returndate   | date        | NO   |     | NULL    |       |
 | detail_dailylatefee | varchar(20) | YES  |     | NULL    |       |
 +---------------------+-------------+------+-----+---------+-------+
 6 rows in set (0.002 sec)
@@ -167,18 +169,17 @@ INSERT INTO MEMBERSHIP (mem_fname, mem_lname, mem_street, mem_city, mem_state, m
 Query OK, 12 rows affected (0.004 sec)
 Records: 12  Duplicates: 0  Warnings: 0
 
-INSERT INTO RENTAL (rent_date, mem_num) VALUES
-    -> ('01-MAR-16', 103),
-    -> ('01-MAR-16', 105),
-    -> ('02-MAR-16', 102),
-    -> ('02-MAR-16', 110),
-    -> ('02-MAR-16', 111),
-    -> ('02-MAR-16', 107),
-    -> ('02-MAR-16', 104),
-    -> ('03-MAR-16', 105),
-    -> ('03-MAR-16', 111);
-Query OK, 9 rows affected (0.002 sec)
-Records: 9  Duplicates: 0  Warnings: 0
+INSERT INTO RENTAL (Rent_Num, Rent_Date, Mem_Num)
+VALUES
+-> (1001, '2016-03-01', 103),
+-> (1002, '2016-03-01', 105),
+-> (1003, '2016-03-02', 102),
+-> (1004, '2016-03-02', 110),
+-> (1005, '2016-03-02', 111),
+-> (1006, '2016-03-02', 107),
+-> (1007, '2016-03-02', 104),
+-> (1008, '2016-03-03', 105),
+-> (1009, '2016-03-03', 111);
 
 
 INSERT INTO PRICE (price_description, price_rentfee, price_dailylatefee) VALUES
@@ -489,4 +490,171 @@ select movie_genre, avg(movie_cost) from MOVIE group by movie_genre;
 
 Question 18
 
+select m.movie_title, m.movie_genre, p.price_description, p.price_rentfee from MOVIE m join PRICE p on m.price_code = p.price_code where m.price_code
+ is not NULL;
++----------------------------+-------------+-------------------+---------------+
+| movie_title                | movie_genre | price_description | price_rentfee |
++----------------------------+-------------+-------------------+---------------+
+| What He Doesnt Know        | COMEDY      | Standard          |           2.5 |
+| The Cesar Family Christmas | FAMILY      | New Release       |           4.5 |
+| Richard Goodhope           | DRAMA       | New Release       |           4.5 |
+| Beatnik Fever              | COMEDY      | New Release       |           4.5 |
+| Smokey Mountain Wildlife   | ACTION      | Discount          |           2.5 |
+| Where Hope Dies            | DRAMA       | Discount          |           2.5 |
+| Time to Burn               | ACTION      | Discount          |           2.5 |
++----------------------------+-------------+-------------------+---------------+
+7 rows in set (0.001 sec)
+
+Question 19
+
+select m.movie_genre, avg(p.price_rentfee) as "Average Rental Fee" from MOVIE m join PRICE p on m.price_code = p.price_code group by movie_genre;
++-------------+--------------------+
+| movie_genre | Average Rental Fee |
++-------------+--------------------+
+| ACTION      |                2.5 |
+| COMEDY      |                3.5 |
+| DRAMA       |                3.5 |
+| FAMILY      |                4.5 |
++-------------+--------------------+
+4 rows in set (0.001 sec)
+
+Question 20
+
+select m.movie_title, m.movie_cost/p.price_rentfee as "BreakEven Rentals" from MOVIE m join PRICE p on m.price_code = p.price_code where m.price_code is not NULL;
++----------------------------+--------------------+
+| movie_title                | BreakEven Rentals  |
++----------------------------+--------------------+
+| What He Doesnt Know        |               23.2 |
+| The Cesar Family Christmas |   8.88888888888889 |
+| Richard Goodhope           | 13.333333333333334 |
+| Beatnik Fever              |  6.666666666666667 |
+| Smokey Mountain Wildlife   |                 24 |
+| Where Hope Dies            |                 10 |
+| Time to Burn               |                 18 |
++----------------------------+--------------------+
+7 rows in set (0.001 sec)
+
+Question 21
+
+select m.movie_title, m.movie_year  from MOVIE m join PRICE p on m.price_code = p.price_code where m.price_code is not NULL;
++----------------------------+------------+
+| movie_title                | movie_year |
++----------------------------+------------+
+| What He Doesnt Know        | 2013       |
+| The Cesar Family Christmas | 2014       |
+| Richard Goodhope           | 2015       |
+| Beatnik Fever              | 2014       |
+| Smokey Mountain Wildlife   | 2011       |
+| Where Hope Dies            | 2005       |
+| Time to Burn               | 2010       |
++----------------------------+------------+
+7 rows in set (0.002 sec)
+
+Question 22
+
+select movie_title, movie_genre, movie_cost from MOVIE where movie_cost > 44.99 and movie_cost < 49.99;
++--------------+-------------+------------+
+| movie_title  | movie_genre | movie_cost |
++--------------+-------------+------------+
+| Time to Burn | ACTION      |         45 |
++--------------+-------------+------------+
+1 row in set (0.001 sec)
+
+
+Question 23
+
+select m.movie_title, p.price_description, p.price_rentfee, m.movie_genre from MOVIE m join PRICE p on m.price_code = p.price_code where m.movie_genr
+e = "FAMILY" or m.movie_genre = "COMEDY" or m.movie_genre = "DRAMA";
++----------------------------+-------------------+---------------+-------------+
+| movie_title                | price_description | price_rentfee | movie_genre |
++----------------------------+-------------------+---------------+-------------+
+| The Cesar Family Christmas | New Release       |           4.5 | FAMILY      |
+| Richard Goodhope           | New Release       |           4.5 | DRAMA       |
+| Beatnik Fever              | New Release       |           4.5 | COMEDY      |
+| Where Hope Dies            | Discount          |           2.5 | DRAMA       |
+| What He Doesnt Know        | Standard          |           2.5 | COMEDY      |
++----------------------------+-------------------+---------------+-------------+
+5 rows in set (0.001 sec)
+
+Question 24
+
+select m.mem_num , m.mem_fname, m.mem_lname, m.mem_balance from MEMBERSHIP m join RENTAL r on r.mem_num = m.mem_num where r.rent_num is not NULL;
++---------+-----------+-----------+-------------+
+| mem_num | mem_fname | mem_lname | mem_balance |
++---------+-----------+-----------+-------------+
+|     102 | Tami      | Dawson    |          11 |
+|     103 | Curt      | Knight    |           6 |
+|     104 | Jamal     | Melendez  |           0 |
+|     105 | Iva       | Mcclain   |          15 |
+|     105 | Iva       | Mcclain   |          15 |
+|     107 | Rosario   | Elliott   |           5 |
+|     110 | Lewis     | Rosales   |           0 |
+|     111 | Stacy     | Mann      |           8 |
+|     111 | Stacy     | Mann      |           8 |
++---------+-----------+-----------+-------------+
+9 rows in set (0.002 sec)
+
+
+Question 25
+
+select min(m.mem_balance) as "Minimum Balance" , max(m.mem_balance) as "Maximum Balance", avg(m.mem_balance) as "Average Balance" from MEMBERSHIP m join RENTAL r on r.mem_num = m.mem_num where r.rent_num is not NULL;
++-----------------+-----------------+-----------------+
+| Minimum Balance | Maximum Balance | Average Balance |
++-----------------+-----------------+-----------------+
+|               0 |              15 |          7.5556 |
++-----------------+-----------------+-----------------+
+1 row in set (0.002 sec)
+
+
+Question 26
+
+
+select r.rent_num, r.rent_date, d.vid_num, m.movie_title, d.detail_duedate, detail_returndate from RENTAL r join DETAILRENTAL d on r.rent_num = d.rent_num join VIDEO v on d.vid_num = v.vid_num join MOVIE m on v.movie_num = m.movie_num where d.detail_returndate > detail_duedate order by r.rent_num, m.movie_title;
++----------+------------+---------+----------------------------+----------------+-------------------+
+| rent_num | rent_date  | vid_num | movie_title                | detail_duedate | detail_returndate |
++----------+------------+---------+----------------------------+----------------+-------------------+
+|     1003 | 2016-03-02 |   54325 | The Cesar Family Christmas | 2016-03-04     | 2016-03-09        |
+|     1003 | 2016-03-02 |   61369 | What He Doesnt Know        | 2016-03-06     | 2016-03-09        |
+|     1003 | 2016-03-02 |   61388 | Where Hope Dies            | 2016-03-06     | 2016-03-09        |
+|     1004 | 2016-03-02 |   44392 | Beatnik Fever              | 2016-03-05     | 2016-03-07        |
+|     1004 | 2016-03-02 |   34367 | Richard Goodhope           | 2016-03-05     | 2016-03-07        |
++----------+------------+---------+----------------------------+----------------+-------------------+
+5 rows in set (0.003 sec)
+
+
+Question 27
+
+select r.rent_num, r.rent_date, m.movie_title, d.detail_fee from RENTAL r join DETAILRENTAL d on r.rent_num = d.rent_num join VIDEO v on d.vid_num =
+v.vid_num join MOVIE m on v.movie_num = m.movie_num where d.detail_returndate <= detail_duedate order by r.rent_num, m.movie_title;
++----------+------------+--------------------------+------------+
+| rent_num | rent_date  | movie_title              | detail_fee |
++----------+------------+--------------------------+------------+
+|     1001 | 2016-03-01 | Richard Goodhope         |          4 |
+|     1001 | 2016-03-01 | Smokey Mountain Wildlife |          2 |
+|     1001 | 2016-03-01 | Time to Burn             |          2 |
+|     1002 | 2016-03-01 | Beatnik Fever            |          4 |
+|     1004 | 2016-03-02 | Smokey Mountain Wildlife |          2 |
+|     1005 | 2016-03-02 | Beatnik Fever            |          4 |
+|     1005 | 2016-03-02 | Smokey Mountain Wildlife |          2 |
+|     1006 | 2016-03-02 | Richard Goodhope         |          4 |
+|     1008 | 2016-03-03 | Richard Goodhope         |          4 |
++----------+------------+--------------------------+------------+
+9 rows in set (0.002 sec)
+
+Question 28
+
+select     m.movie_Num,     m.movie_Genre,     g.Avg_Genre_Cost,     m.movie_Cost,     ROUND(         ((m.movie_Cost - g.Avg_Genre_Cost)         / g.Avg_Genre_Cost) * 100,         2     ) AS Percent_Difference FROM MOVIE m JOIN (     SELECT         Movie_Genre,         AVG(Movie_Cost) AS Avg_Genre_Cost     FROM MOVIE     GROUP BY movie_Genre ) g ON m.movie_Genre = g.movie_Genre;
++-----------+-------------+----------------+------------+--------------------+
+| movie_Num | movie_Genre | Avg_Genre_Cost | movie_Cost | Percent_Difference |
++-----------+-------------+----------------+------------+--------------------+
+|      1234 | FAMILY      |        40.0000 |         40 |               0.00 |
+|      1235 | ACTION      |        52.5000 |         60 |              14.29 |
+|      1236 | DRAMA       |        58.3333 |         60 |               2.86 |
+|      1237 | COMEDY      |        44.0000 |         30 |             -31.82 |
+|      1238 | DRAMA       |        58.3333 |         90 |              54.29 |
+|      1239 | DRAMA       |        58.3333 |         25 |             -57.14 |
+|      1245 | ACTION      |        52.5000 |         45 |             -14.29 |
+|      1246 | COMEDY      |        44.0000 |         58 |              31.82 |
++-----------+-------------+----------------+------------+--------------------+
+8 rows in set (0.003 sec)
 
